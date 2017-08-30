@@ -3,7 +3,7 @@
 namespace app\modules\intresteddoctors\controllers;
 
 use Yii;
-use app\modules\intresteddoctors\models\Intresteddoctors;
+use app\modules\intresteddoctors\models\IntrestedDoctors;
 use app\modules\intresteddoctors\models\IntresteddoctorsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -23,88 +23,9 @@ use app\modules\doctors\models\Doctors;
  */
 class IntresteddoctorsController extends Controller
 {
-    /**
-     * @inheritdoc
-     */
-    /* public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    } */
+    
 	
-	public function behaviors()
-	{
-	
-		$permissionsArray = [''];
-		if(UserrolesModel::getRole() == 1)
-		{
-			$permissionsArray = ['index','create','update','view','delete'];
-		}
-		else {
-			$modulePermissions = ModulePermissions::find()->where(['moduleId' =>7,'adminuserId'=> Yii::$app->user->identity->id])->one();
-			if($modulePermissions['permissions_all'] == 1)
-			{
-				$permissionsArray = ['index','create','update','view','delete'];
-			}
-			else {
-				if($modulePermissions['permissions_add'] == 1)
-				{
-					$permissionAdd = ['create'];
-					$permissionsArray = array_merge($permissionsArray,$permissionAdd);
-				}
-				if($modulePermissions['permissions_edit'] == 1)
-				{
-					$permissionEdit = ['update'];
-					$permissionsArray = array_merge($permissionsArray,$permissionEdit);
-				}
-				if($modulePermissions['permissions_delete'] == 1)
-				{
-					$permissionDelete = ['delete'];
-					$permissionsArray = array_merge($permissionsArray,$permissionDelete);
-				}
-				if($modulePermissions['permissions_view'] == 1)
-				{
-					$permissionView = ['index','view'];
-					$permissionsArray = array_merge($permissionsArray,$permissionView);
-				}
-	
-			}
-		}
-		//print_r($permissionsArray);exit();
-		return [
-				'verbs' => [
-						'class' => VerbFilter::className(),
-						'actions' => [
-								'delete' => ['post'],
-						],
-				],
-				'access' => [
-						'class' => AccessControl::className(),
-						'only' => [
-								'index','create','update','view','delete','brandsupload'
-	
-						],
-						'rules' => [
-								[
-										'actions' => $permissionsArray,
-										'allow' => true,
-										'matchCallback' => function ($rule, $action) {
-										return (UserrolesModel::getRole());
-										}
-										],
-	
-										]
-										]
-										];
-	}
-	
-
+    public $layout = false;
     /**
      * Lists all Intresteddoctors models.
      * @return mixed
@@ -151,20 +72,39 @@ class IntresteddoctorsController extends Controller
      */
     public function actionCreate()
     {
+    	
         $model = new Intresteddoctors();
-
-        if ($model->load(Yii::$app->request->post())) {
-        	
-        	$model->role = 2;
-        	$model->createdDate = date('Y-m-d H:i:s');
-        	$model->save();
-        	Yii::$app->session->setFlash('success', " Interested Doctors Created successfully ");
+        $result = array();
+        if ($model->load(\Yii::$app->getRequest()->getBodyParams(), ''))
+		{
+			$model->createdDate = date('Y-m-d H:i:s');
+        	if($model->validate())
+        	{
+        	  if($model->save())
+        	  {
+        	  	$result['status'] = 'success';
+        	  	$result['errors'] = [];
+        	  }
+        	  
+        	}
+        	else {
+        		
+        		$result['status'] = 'fail';
+        		$validateerrors = $model->errors;
+        		foreach ($validateerrors as $k => $v)
+        		{
+        			$result['errors'][] = $validateerrors[$k][0];
+        			//print_r($validateerrors[$k]);exit();
+        		}
+        		//print_r($model->errors);exit();
+        	}
+        	//print_r($model->errors);exit();
+        	return $result;
+        	//Yii::$app->session->setFlash('success', " Interested Doctors Created successfully ");
             //return $this->redirect(['view', 'id' => $model->insdocid]);
-        	return $this->redirect(['index']);
+        	//return $this->redirect(['index']);
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        	return $model;
         }
     }
 

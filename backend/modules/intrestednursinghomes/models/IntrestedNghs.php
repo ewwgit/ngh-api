@@ -37,7 +37,7 @@ class IntrestedNghs extends \yii\db\ActiveRecord
             [['createdDate'], 'safe'],
 
         		['name', 'string', 'min' => 2, 'max' => 255],
-        		['name', 'unique', 'message' => 'This name has already been taken.'],
+        		//['name', 'unique', 'message' => 'This name has already been taken.'],
         		
         		[
         		'mobile',

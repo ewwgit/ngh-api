@@ -38,7 +38,7 @@ class IntrestedDoctors extends \yii\db\ActiveRecord
            
            
         		['name', 'string', 'min' => 2, 'max' => 255],
-        		['name', 'unique', 'message' => 'This name has already been taken.'],
+        		//['name', 'unique', 'message' => 'This name has already been taken.'],
         		
         		
                 [['mobile'], 'string', 'max' => 20],

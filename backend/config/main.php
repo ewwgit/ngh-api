@@ -11,7 +11,36 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'modules' => [
+    		
+    		'nursinghomes' => [
+    				'class' => 'app\modules\nursinghomes\nursinghomes',
+    		],
+    		'doctors' => [
+    				'class' => 'app\modules\doctors\doctors',
+    		],
+    		'specialities' => [
+    				'class' => 'app\modules\specialities\specialities',
+    		],
+    		'qualifications' => [
+    				'class' => 'app\modules\qualifications\qualifications',
+    		],
+    		'role' => [
+    				'class' => 'backend\modules\role\Role',
+    		],
+    		'user' => [
+    				'class' => 'backend\modules\user\user',
+    		],
+    		'intresteddoctors' => [
+    				'class' => 'app\modules\intresteddoctors\intresteddoctors',
+    		],
+    		'intrestednursinghomes' => [
+    				'class' => 'app\modules\intrestednursinghomes\Intrestednursinghomes',
+    		],
+    		'patients' => [
+    				'class' => 'app\modules\patients\patients',
+    		],
+    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
@@ -32,10 +61,13 @@ return [
     		'request' => [
     				'class' => '\yii\web\Request',
     				'enableCookieValidation' => false,
+    				'enableCsrfValidation' => false,
     				'parsers' => [
     						'application/json' => 'yii\web\JsonParser',
     				],
     		],
+    		
+    		
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [

@@ -3,7 +3,7 @@
 namespace app\modules\intrestednursinghomes\controllers;
 
 use Yii;
-use app\modules\intrestednursinghomes\models\Intrestednghs;
+use app\modules\intrestednursinghomes\models\IntrestedNghs;
 use app\modules\intrestednursinghomes\models\IntrestednghsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -12,6 +12,7 @@ use backend\models\Role;
 use yii\helpers\ArrayHelper;
 use backend\models\SignupConvertForm;
 use app\modules\nursinghomes\models\Nursinghomes;
+use app\modules\intresteddoctors\models\IntrestedDoctors;
 
 /**
  * IntrestednghsController implements the CRUD actions for Intrestednghs model.
@@ -80,18 +81,116 @@ class IntrestednghsController extends Controller
      */
     public function actionCreate()
     {
+    	
         $model = new Intrestednghs();
-
-        if ($model->load(Yii::$app->request->post())&& $model->validate()){
-        	    $model->createdDate = date('Y-m-d H:i:s');
-        	    $model->role = 3;
-        		$model->save() ;
-        		Yii::$app->session->setFlash('success', " Interested Nursing Homes Created successfully ");
-            return $this->redirect(['view', 'id' => $model->insnghid]);
+        $docModel = new IntrestedDoctors();
+        $result = array();
+        if ($model->load(\Yii::$app->getRequest()->getBodyParams(), ''))
+		{
+			$model->createdDate = date('Y-m-d H:i:s');
+			
+			$emailcheck = IntrestedDoctors::find()->where(['email' => $model->email])->one();
+			if($emailcheck)
+			{
+			
+				$result['status'] = 'fail';
+				$result['errors'][] = 'This email has already been taken';
+				return $result; exit();
+			}
+			else{
+				$emailcheck = Intrestednghs::find()->where(['email' => $model->email])->one();
+				if($emailcheck)
+				{
+			
+					$result['status'] = 'fail';
+					$result['errors'][] = 'This email has already been taken';
+					return $result; exit();
+				}
+			}
+			$mobilecheck = IntrestedDoctors::find()->where(['mobile' => $model->mobile])->one();
+			if($mobilecheck)
+			{
+				
+        		$result['status'] = 'fail';
+        		$result['errors'][] = 'This mobile number has already been taken';
+        		return $result; exit();
+			}
+			else{
+				$mobilecheck = Intrestednghs::find()->where(['mobile' => $model->mobile])->one();
+				if($mobilecheck)
+				{
+				
+					$result['status'] = 'fail';
+					$result['errors'][] = 'This mobile number has already been taken';
+					return $result; exit();
+				}
+			}
+			
+		
+			
+			if($model->role == 3)
+			{
+			
+        	if($model->validate())
+        	{
+        	  if($model->save())
+        	  {
+        	  	$result['status'] = 'success';
+        	  	$result['errors'] = [];
+        	  }
+        	  
+        	}
+        	else {
+        		
+        		$result['status'] = 'fail';
+        		$validateerrors = $model->errors;
+        		foreach ($validateerrors as $k => $v)
+        		{
+        			$result['errors'][] = $validateerrors[$k][0];
+        			//print_r($validateerrors[$k]);exit();
+        		}
+        		//print_r($model->errors);exit();
+        	}
+			}
+			
+			if($model->role == 2)
+			{
+				$docModel->role = $model->role;
+				$docModel->name = $model->name;
+				$docModel->email = $model->email;
+				$docModel->description = $model->description;
+				$docModel->mobile = $model->mobile;
+				$docModel->createdDate = $model->createdDate;
+				
+				if($docModel->validate())
+				{
+					if($docModel->save())
+					{
+						$result['status'] = 'success';
+						$result['errors'] = [];
+					}
+					 
+				}
+				else {
+			
+					$result['status'] = 'fail';
+					$validateerrors = $docModel->errors;
+					foreach ($validateerrors as $k => $v)
+					{
+						$result['errors'][] = $validateerrors[$k][0];
+						//print_r($validateerrors[$k]);exit();
+					}
+					//print_r($model->errors);exit();
+				}
+			}
+			
+        	//print_r($model->errors);exit();
+        	return $result;
+        	//Yii::$app->session->setFlash('success', " Interested Doctors Created successfully ");
+            //return $this->redirect(['view', 'id' => $model->insdocid]);
+        	//return $this->redirect(['index']);
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        	return $model;
         }
     }
 

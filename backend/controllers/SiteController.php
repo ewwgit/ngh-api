@@ -6,40 +6,71 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use yii\web\Response;
+use yii\filters\auth\HttpBasicAuth ;
+use common\models\User;
+use app\models\UserSecurityTokens;
 
 /**
  * Site controller
  */
 class SiteController extends Controller
 {
+	
+	
+	/**
+	 * Finds user by username and password
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @return static|null
+	 */
+	
     /**
      * @inheritdoc
      */
-    public function behaviors()
+   /*  public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
+    	$behaviors = parent::behaviors();
+	
+		$behaviors['contentNegotiator'] = [
+				'class' => 'yii\filters\ContentNegotiator',
+				'formats' => [
+						'application/json' => Response::FORMAT_JSON,
+				]
+		];
+	
+		$behaviors['authenticator'] = [
+				'class' => HttpBasicAuth::className(),
+				'auth' => [$this, 'authenticate']
+		];
+	
+		return $behaviors;
     }
+		
+		public function authenticate($username, $password)
+		{
+			// username, password are mandatory fields
+			if(empty($username) || empty($password)) {
+				return null;
+			}
+		
+			// get user using requested email
+			$user = User::findByUsername($username);
+		
+			// if no record matching the requested user
+			if(empty($user)) {
+				return null;
+			}
+		
+			// if password validation fails
+			if(!User::validatePassword($password)) {
+				return null;
+			}
+		
+			// if user validates (both user_email, user_password are valid)
+			return $user;
+		} */
 
     /**
      * @inheritdoc
@@ -70,18 +101,35 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+    	$model = new LoginForm();
+    	$tokenModel = new UserSecurityTokens();
+    	$result = array();
+        if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '') && $model->login()) {
+             
+             $result['status'] = 'success';
+             $result['errors'] = [];
+             $result['id'] = $model->user->id;
+             $result['username'] = $model->user->username;
+             $result['email'] = $model->user->email;
+             $result['role'] = $model->user->role;
+             $tokenModel->userId = $model->user->id;
+             $tokenModel->token = \Yii::$app->security->generateRandomString();
+             $tokenModel->status = 'Active';
+             $tokenModel->createdDate = date('Y-m-d H:i:s');
+             $tokenModel->save();
+             $result['token'] = $tokenModel->token;
+             //print_r($tokenModel->token);exit();
         } else {
-            return $this->render('login', [
-                'model' => $model,
-            ]);
+        $result['status'] = 'fail';
+        		$validateerrors = $model->errors;
+        		foreach ($validateerrors as $k => $v)
+        		{
+        			$result['errors'][] = $validateerrors[$k][0];
+        			//print_r($validateerrors[$k]);exit();
+        		}
+           //echo 'error';exit();
         }
+        return $result;
     }
 
     /**
