@@ -48,6 +48,8 @@ class Patients extends \yii\db\ActiveRecord
 	public $documentUrl;
 	public $patientimageupdate;
 	public $previousRecords;
+	public $bp;
+	public $nghId;
     public static function tableName()
     {
         return 'patients';
@@ -59,11 +61,11 @@ class Patients extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['firstName', 'lastName', 'gender', 'age', 'dateOfBirth', 'country', 'state',  'district', 'city', 'mandal', 'village', 'pinCode', 'mobile'], 'required'],
-             [['height','weight','respirationRate','BPLeftArm','BPRightArm','pulseRate','temparatureType','diseases','allergicMedicine','patientCompliant'],'required'],
+            [['firstName',  'gender', 'age','nghId'], 'required'],
+             [['BPLeftArm'],'required'],
             [['gender'], 'string'],
             [['age','mobile','pinCode'],'integer'],
-            [['dateOfBirth', 'createdDate', 'updatedDate','patientImage','patientimageupdate','previousRecords','createdBy','updatedBy'], 'safe'],
+            [['dateOfBirth', 'createdDate', 'updatedDate','patientImage','patientimageupdate','previousRecords','createdBy','updatedBy','bp'], 'safe'],
             [['country', 'state'], 'integer'],
             [['firstName', 'lastName', 'patientUniqueId', 'countryName', 'stateName', 'district', 'city', 'mandal', 'village'], 'string', 'max' => 200],
            // [['age'], 'string', 'max' => 10],
@@ -96,7 +98,7 @@ class Patients extends \yii\db\ActiveRecord
     {
         return [
             'patientId' => 'Patient ID',
-            'firstName' => 'First Name',
+            'firstName' => 'Name',
             'lastName' => 'Last Name',
             'gender' => 'Gender',
             'age' => 'Age',
@@ -116,6 +118,8 @@ class Patients extends \yii\db\ActiveRecord
             'createdDate' => 'Created Date',
             'updatedDate' => 'Updated Date',
         		'documentUrl' => 'Patient Documents',
+        	'BPLeftArm' => 'BP',
+        	'nghId' => 'Nursing Home ID'
         ];
     }
 }

@@ -37,12 +37,12 @@ class PatientInformation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['patientId', 'height', 'weight', 'respirationRate', 'BPLeftArm', 'BPRightArm', 'pulseRate', 'temparatureType', 'diseases', 'allergicMedicine', 'createdDate', 'patientCompliant'], 'required'],
+            /* [['patientId', 'height', 'weight', 'respirationRate', 'BPLeftArm', 'BPRightArm', 'pulseRate', 'temparatureType', 'diseases', 'allergicMedicine', 'createdDate', 'patientCompliant'], 'required'],
             [['patientId'], 'integer'],
             [['createdDate'], 'safe'],
             [['patientCompliant'], 'string'],
-            //[['height', 'weight', 'respirationRate', 'pulseRate'], 'string', 'max' => 5],
-            [['BPLeftArm', 'BPRightArm', 'temparatureType', 'diseases', 'allergicMedicine'], 'string', 'max' => 200],
+            [['height', 'weight', 'respirationRate', 'pulseRate'], 'string', 'max' => 5],
+            [['BPLeftArm', 'BPRightArm', 'temparatureType', 'diseases', 'allergicMedicine'], 'string', 'max' => 200], */
 
         ];
     }

@@ -81,23 +81,14 @@ class PatientsController extends Controller
         $model = new Patients();
         $patmodel = new PatientInformation();
         $newModel = new PatientDocuments();
-        $model->countriesList = Countries::getCountries();
-        $model->citiesData = [];
+       
+        $result = array();
         
-        if($model->country != ''){
-        
-        	$model->state=States::getCountrysByStatesView($model->country );
-        	//print_r($model->state);exit();
-        
-        }else{
-        	$model->country = $model->country;
-        	$model->statesData =[];
-        	//print_r($model->statesData);exit();
-        	$model->state='';
-        }
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-        	
+        	if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+        	$model->BPLeftArm = $model->bp;
+        	$model->createdBy = $model->nghId;
+        	$model->updatedBy = $model->nghId;
+        	if($model->validate()){
         	
         	$presentDate = date('Y-m-d');
         	$patientscount = Patients::find()->where("createdDate LIKE '$presentDate%'")->count();
@@ -112,54 +103,55 @@ class PatientsController extends Controller
         	$model->patientUniqueId = $overallUniqueId;
         	$model->createdDate = date('Y-m-d H:i:s');
         	$model->updatedDate = date('Y-m-d H:i:s');
+        	
+        	$model->country = 101;
+        	$model->state = 36;
         	$model->countryName = Countries::getCountryName($model->country);
         	$model->stateName = States::getStateName($model->state);
-        	$model->dateOfBirth = date('Y-m-d', strtotime($model->dateOfBirth));
-        	$model->createdBy = Yii::$app->user->identity->id;
-        	$model->updatedBy = Yii::$app->user->identity->id;
-        	$model->save();
-        	
-        	//print_r( $model -> patientId);exit();
-        	
-        	$patmodel->patientId = $model->patientId;
-        	//print_r($patmodel->patientId);exit();
-        	
-        	$patmodel->height = $model->height;
-        	//print_r($patmodel->height);exit();
-        	$patmodel->weight = $model->weight;
-        	//print_r($patmodel->weight);exit();
-        	$patmodel->respirationRate = $model->respirationRate;
+        	$model->dateOfBirth = $this->reverse_birthday($model->age);        	
+        	$modelSuccess = $model->save();
+        
         	$patmodel->BPLeftArm = $model->BPLeftArm;
-        	$patmodel->BPRightArm = $model->BPRightArm;
-        	$patmodel->pulseRate = $model->pulseRate;
-        	$patmodel->temparatureType = $model->temparatureType;
+        	
         	$patmodel->diseases = $model->diseases;
-        	$patmodel->allergicMedicine = $model->allergicMedicine;
-        	$patmodel->patientCompliant = $model->patientCompliant; 
-        	//print_r($patmodel->patientCompliant);exit();
         	$patmodel->createdDate = date('Y-m-d H:i:s');
-        	//print_r($patmodel->createdDate);exit();
-        	$patmodel->save();
+        	$patmodel->patientId = $model->patientId;
+        	$patmodelSuccess = $patmodel->save();
         	
-        	$newModel->file = UploadedFile::getInstances($model, 'documentUrl');
-        	$newModel->patientInfoId = $patmodel->patientInfoId;
-        	$response = $newModel->upload();
+        	if($modelSuccess ==1 && $patmodelSuccess == 1){
         	
-        	//print_r($patmodel->errors);exit();
+        	$result['status'] = 'success';
+        	$result['errors'] = [];
+        	}
+        	else{
+        		$result['status'] = 'fail';
+        		$result['errors'][0] = 'Some error exist';
+        	}
+        	
+        	
+        	}
+        	else {
+        		
+        		
+        			$result['status'] = 'fail';
+        			$validateerrors = $model->errors;
+        			foreach ($validateerrors as $k => $v)
+        			{
+        				$result['errors'][] = $validateerrors[$k][0];
+        				//print_r($validateerrors[$k]);exit();
+        			}
+        			//print_r($model->errors);exit();
+        		
+        	}
+        	
+        	return $result;
         
-        	
-        	
-        	
-            //return $this->redirect(['view', 'id' => $model->patientId]);
-        	Yii::$app->session->setFlash('success', " Patient Created successfully ");
-            return $this->redirect(['index']);
-        
-        } else {
-        	//print_r($model->errors);exit();
-            return $this->render('create', [
-                'model' => $model,
-            ]);
         }
+    }
+    
+    public function reverse_birthday($years)
+    {
+    	return date('Y-m-d', strtotime($years . ' years ago'));
     }
 
     /**
