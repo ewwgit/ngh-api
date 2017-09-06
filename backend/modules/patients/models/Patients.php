@@ -50,6 +50,7 @@ class Patients extends \yii\db\ActiveRecord
 	public $previousRecords;
 	public $bp;
 	public $nghId;
+	public $token;
     public static function tableName()
     {
         return 'patients';
@@ -65,7 +66,7 @@ class Patients extends \yii\db\ActiveRecord
              [['BPLeftArm'],'required'],
             [['gender'], 'string'],
             [['age','mobile','pinCode'],'integer'],
-            [['dateOfBirth', 'createdDate', 'updatedDate','patientImage','patientimageupdate','previousRecords','createdBy','updatedBy','bp'], 'safe'],
+            [['dateOfBirth', 'createdDate', 'updatedDate','patientImage','patientimageupdate','previousRecords','createdBy','updatedBy','bp','token'], 'safe'],
             [['country', 'state'], 'integer'],
             [['firstName', 'lastName', 'patientUniqueId', 'countryName', 'stateName', 'district', 'city', 'mandal', 'village'], 'string', 'max' => 200],
            // [['age'], 'string', 'max' => 10],

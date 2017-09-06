@@ -20,7 +20,7 @@ use app\modules\doctors\models\DoctorsQualification;
 use app\modules\qualifications\models\Qualifications;
 use app\modules\doctors\models\DoctorsSpecialities;
 use app\modules\specialities\models\Specialities;
-
+use app\models\UserSecurityTokens;
 /**
  * PatientsController implements the CRUD actions for Patients model.
  */
@@ -85,6 +85,15 @@ class PatientsController extends Controller
         $result = array();
         
         	if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+        		
+        	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $model->nghId,'status' =>'Active','token' => $model->token])->one();
+        	
+        	if(empty($usertokenAccess))
+        	{
+        		$result['status'] = 'fail';
+        		$result['errors'] = "You don't have valid token";
+        		return $result;exit();
+        	}
         	$model->BPLeftArm = $model->bp;
         	$model->createdBy = $model->nghId;
         	$model->updatedBy = $model->nghId;
@@ -112,8 +121,9 @@ class PatientsController extends Controller
         	$modelSuccess = $model->save();
         
         	$patmodel->BPLeftArm = $model->BPLeftArm;
-        	
-        	$patmodel->diseases = $model->diseases;
+        	$patmodel->weight = $model->weight;
+        	$patmodel->patientCompliant = $model->patientCompliant;
+        	$patmodel->temparatureType = $model->temparatureType;
         	$patmodel->createdDate = date('Y-m-d H:i:s');
         	$patmodel->patientId = $model->patientId;
         	$patmodelSuccess = $patmodel->save();
