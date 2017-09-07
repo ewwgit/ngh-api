@@ -40,28 +40,21 @@ class PatientsSearch extends Patients
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($nghId)
     {
-    	if(UserrolesModel::getRole() == 3){
-        $query = Patients::find()->where(['createdBy' => Yii::$app->user->identity->id]);
-    	}
-    	else{
-    		$query = Patients::find();
-    	}
+    	
+        $query = Patients::find()->where(['createdBy' => $nghId]);
+    	
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+        	'pagination' =>false,
         ]);
 
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
+        
+        $query->joinWith('patientsinfonew');
 
         // grid filtering conditions
         $query->andFilterWhere([

@@ -47,13 +47,114 @@ class PatientsController extends Controller
      */
     public function actionIndex()
     {
+    	$nghId = 0;
+    	$token = '';
+    	if(isset($_GET['nghId']) && $_GET['nghId'] != '')
+    	{
+    		$nghId = $_GET['nghId'];
+    	}
+    	
+    	if(isset($_GET['token']) && $_GET['token'] != '')
+    	{
+    		$token = $_GET['token'];
+    	}
+    	
+    	if($nghId == 0 ||  $token == '')
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "Please you can pass valid inputs";
+    		return $result;exit();
+    	}
+    	
+    	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $nghId,'status' =>'Active','token' => $token])->one();
+    	 
+    	if(empty($usertokenAccess))
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "You don't have valid token";
+    		return $result;exit();
+    	}
         $searchModel = new PatientsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search($nghId);
+        $models = $dataProvider->getModels();
+        
+        $result = array();
+        $result['status'] = 'success';
+        $result['errors'] = '';
+        $result['count'] =  count($models);
+        for($i=0; $i < count($models); $i++)
+        {
+        	//print_r($models[$i]['patientsinfonew']);exit();
+        	if($models[$i]['firstName'] == null)
+        	{
+        		$result['patientsInformation'][$i]['name'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['name'] = $models[$i]['firstName'];
+        	}
+        	
+        	if($models[$i]['age'] == null)
+        	{
+        		$result['patientsInformation'][$i]['age'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['age'] = $models[$i]['age'];
+        	}
+        	
+        	
+        	if($models[$i]['gender'] == null)
+        	{
+        		$result['patientsInformation'][$i]['gender'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['gender'] = $models[$i]['gender'];
+        	}
+        	
+        	
+        	if($models[$i]['patientsinfonew']['BPLeftArm'] == null)
+        	{
+        		$result['patientsInformation'][$i]['bp'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['bp'] = $models[$i]['patientsinfonew']['BPLeftArm'];
+        	}
+        	
+        	
+        	if($models[$i]['patientsinfonew']['weight'] == null)
+        	{
+        		$result['patientsInformation'][$i]['weight'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['weight'] =$models[$i]['patientsinfonew']['weight'];
+        	}
+        	
+        	
+        	if($models[$i]['patientsinfonew']['temparatureType'] == null)
+        	{
+        		$result['patientsInformation'][$i]['temparature'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['temparature'] = $models[$i]['patientsinfonew']['temparatureType'];
+        	}
+        	
+        	
+        	if($models[$i]['patientsinfonew']['patientCompliant'] == null)
+        	{
+        		$result['patientsInformation'][$i]['patientCompliant'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['patientCompliant'] = $models[$i]['patientsinfonew']['patientCompliant'];
+        	}
+        	
+        	
+        	
+        }
+        return $result;
 
-        return $this->render('index', [
+       /*  return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-        ]);
+        ]); */
     }
 
     /**

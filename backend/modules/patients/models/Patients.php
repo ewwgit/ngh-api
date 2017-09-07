@@ -123,4 +123,9 @@ class Patients extends \yii\db\ActiveRecord
         	'nghId' => 'Nursing Home ID'
         ];
     }
+    
+    public function getPatientsinfonew()
+    {
+    	return $this->hasOne(PatientInformation::className(), ['patientId' => 'patientId']);
+    }
 }
