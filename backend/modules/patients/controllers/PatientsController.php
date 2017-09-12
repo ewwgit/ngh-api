@@ -727,4 +727,40 @@ class PatientsController extends Controller
     	
     	print_r(json_encode($doctos));exit();
     }
+    
+    public function actionSpecialities()
+    {
+         $result = array();
+    	$specilityInfo = Specialities::find()->where(['status' => 'Active'])->all();
+    	$i=0;
+    	$result['status'] = 'success';
+    	$result['errors'] = '';
+    	foreach ($specilityInfo as $spec)
+    	{
+    		$result['specialityInfo'][$i]['spId'] = $spec->spId;
+    		$result['specialityInfo'][$i]['specialityName'] = $spec->specialityName;
+    		$i++;
+    
+    	}
+    	return $result;
+    
+    }
+    
+    public function actionSpecialitydoctors($spId)
+    {
+    	$result = array();
+    	/* if(!isset($spId))
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = 'Provide Speciality Id';
+    		return $result;exit();
+    	} */
+    	$result['status'] = 'success';
+    	$result['errors'] = '';
+    	$doctors = Doctors::getDoctorsBySpeciality($spId);
+    	$result['doctorInfo'] = $doctors;
+    	return $result;
+    	
+    			
+    }
 }

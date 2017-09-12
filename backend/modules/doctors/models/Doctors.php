@@ -188,4 +188,23 @@ class Doctors extends \yii\db\ActiveRecord
     {
     	return $this->hasOne(User::className(), ['id' => 'userId']);
     }
+    
+    public static function getDoctorsBySpeciality($specId)
+    {
+    	 
+    	$pDate = date("Y-M-d H:i:s");
+    	$presentDay = date("D", strtotime($pDate));
+    	$presentTime =  date("H:i", strtotime($pDate));
+    	$doctorInfo = Doctors::find()->select('doctors.*,user.*,doctor_slots.*,doctors_specialities.*')->asArray()->innerJoin('user','doctors.userId=user.id')->leftJoin('doctor_slots','doctors.userId=doctor_slots.dsDoctorId')->innerJoin('doctors_specialities','doctors.userId=doctors_specialities.rdoctorId')->where("(user.status = 10 AND doctors_specialities.rspId = $specId) AND ((doctor_slots.startTime <= '$presentTime' AND doctor_slots.endTime >= '$presentTime' AND Day LIKE '$presentDay%') OR (doctors.availableStatus= 'Online'))")->all();
+    	$avialableDoctors = array();
+    	for($k=0;$k<count($doctorInfo); $k++)
+    	{
+    		if($doctorInfo[$k]['name'] != '')
+    		{
+    			$avialableDoctors[$k]['id'] = $doctorInfo[$k]['userId'];
+    			$avialableDoctors[$k]['name'] = $doctorInfo[$k]['name'];
+    		}
+    	}
+    	return $avialableDoctors;
+    }
 }

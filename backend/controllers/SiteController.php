@@ -105,7 +105,14 @@ class SiteController extends Controller
     	$tokenModel = new UserSecurityTokens();
     	$result = array();
         if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '') && $model->login()) {
+        	
              
+        	if($model->userrole != $model->user->role)
+        	{
+        		$result['status'] = 'fail';
+        		$result['errors'] = "You don't have valid credentials";
+        	}
+        	else{
              $result['status'] = 'success';
              $result['errors'] = [];
              $result['id'] = $model->user->id;
@@ -119,14 +126,10 @@ class SiteController extends Controller
              $tokenModel->save();
              $result['token'] = $tokenModel->token;
              //print_r($tokenModel->token);exit();
+        	}
         } else {
         $result['status'] = 'fail';
-        		$validateerrors = $model->errors;
-        		foreach ($validateerrors as $k => $v)
-        		{
-        			$result['errors'][] = $validateerrors[$k][0];
-        			//print_r($validateerrors[$k]);exit();
-        		}
+        $result['errors'] = 'custom errors exist';
            //echo 'error';exit();
         }
         return $result;
