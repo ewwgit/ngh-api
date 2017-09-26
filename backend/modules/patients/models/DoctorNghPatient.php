@@ -26,6 +26,7 @@ class DoctorNghPatient extends \yii\db\ActiveRecord
 	public $nursingHomeName;
 	public $firstName;
 	public $lastName;
+	public $token;
     /**
      * @inheritdoc
      */
@@ -40,12 +41,11 @@ class DoctorNghPatient extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['doctorId', 'nugrsingId', 'patientId', 'patientHistoryId', 'treatment', 'patientRequestStatus', 'createdBy', 'updatedBy', 'createdDate', 'updatedDate'], 'safe'],
+            [['doctorId', 'nugrsingId', 'patientId', 'patientHistoryId', 'treatment', 'patientRequestStatus', 'createdBy', 'updatedBy', 'createdDate', 'updatedDate','token'], 'safe'],
           /*   [['doctorId', 'nugrsingId', 'patientId', 'patientHistoryId', 'createdBy', 'updatedBy'], 'integer'],
             [['treatment', 'patientRequestStatus'], 'string'], */
             [['doctor','phsId'], 'safe'],
-        	[['doctor','phsId'],'required','on' => 'requestdoctor'],
-        	[['treatment'],'required','on' => 'requesttreatment'],	
+        	
         		
         		[['nursingHomeName','firstName','lastName'], 'safe'],
         ];

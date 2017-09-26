@@ -763,4 +763,55 @@ class PatientsController extends Controller
     	
     			
     }
+    
+    public function actionAssignDoctor()
+    {
+    	$model = new DoctorNghPatient;
+    	$result = array();
+    	 
+    if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+        		
+        	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $model->nugrsingId,'status' =>'Active','token' => $model->token])->one();
+        	
+        	if(empty($usertokenAccess))
+        	{
+        		$result['status'] = 'fail';
+        		$result['errors'] = "You don't have valid token";
+        		return $result;exit();
+        	}
+    
+    		if($model->patientId != 0 && $model->nugrsingId != 0)
+    		{
+    			 
+    			$reqeustalready = DoctorNghPatient::find()->where(['doctorId' => $model->doctorId,'nugrsingId' => $model->nugrsingId,'patientId' => $model->patientId,'patientHistoryId' => $model->patientHistoryId])->one();
+    			//print_r($reqeustalready);exit();
+    			if(empty($reqeustalready))	{
+    				$model->patientRequestStatus = 'PROCESSING';
+    				$model->createdDate = date('Y-m-d H:i:s');
+    				$model->updatedDate = date('Y-m-d H:i:s');
+    				$model->createdBy = $model->nugrsingId;
+    				$model->updatedBy = $model->nugrsingId;
+    				$model->save();
+    				if($model->save())
+    				{
+    					$result['status'] = 'success';
+        		        $result['errors'] = '';
+    				}
+    				else
+    				{
+    					$result['status'] = 'fail';
+    					$result['errors'] = 'some error occur while save the record';
+    				}
+    			}
+    			else{
+    				    $result['status'] = 'fail';
+    					$result['errors'] = 'You are already requested to this doctor';
+    			}
+    			return $result;
+    		}
+    		
+    	}
+    	 
+    	
+    }
 }
