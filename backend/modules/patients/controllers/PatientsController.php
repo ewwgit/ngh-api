@@ -146,6 +146,15 @@ class PatientsController extends Controller
         		$result['patientsInformation'][$i]['patientCompliant'] = $models[$i]['patientsinfonew']['patientCompliant'];
         	}
         	
+        	if($models[$i]['patientUniqueId'] == null)
+        	{
+        		$result['patientsInformation'][$i]['patientUniqueId'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['patientUniqueId'] = $models[$i]['patientUniqueId'];
+        	}
+        	
+        	
         	
         	
         }
@@ -220,7 +229,8 @@ class PatientsController extends Controller
         	$model->stateName = States::getStateName($model->state);
         	$model->dateOfBirth = $this->reverse_birthday($model->age);        	
         	$modelSuccess = $model->save();
-        
+        	$patientIdnew = $model->patientId;
+        	
         	$patmodel->BPLeftArm = $model->BPLeftArm;
         	$patmodel->weight = $model->weight;
         	$patmodel->patientCompliant = $model->patientCompliant;
@@ -228,10 +238,13 @@ class PatientsController extends Controller
         	$patmodel->createdDate = date('Y-m-d H:i:s');
         	$patmodel->patientId = $model->patientId;
         	$patmodelSuccess = $patmodel->save();
+        	$patienthstId = $patmodel->patientInfoId;
         	
         	if($modelSuccess ==1 && $patmodelSuccess == 1){
         	
         	$result['status'] = 'success';
+        	$result['patientId'] = $patientIdnew;
+        	$result['patientHistoryId'] = $patienthstId;
         	$result['errors'] = [];
         	}
         	else{

@@ -904,26 +904,47 @@ class DoctorsController extends Controller
     
     public function actionPatientRequests()
     {
-    	/* $docId = Yii::$app->user->identity->id;
-    	$patientinfoModel = DoctorNghPatient::find()->select('doctor_ngh_patient.patientRequestStatus,doctor_ngh_patient.patientHistoryId,nursinghomes.nursingHomeName,patients.firstName,patients.lastName')->innerJoin('nursinghomes','doctor_ngh_patient.nugrsingId=nursinghomes.nuserId')->innerJoin('patient_information','doctor_ngh_patient.patientHistoryId=patient_information.patientInfoId')->innerJoin('patients','patient_information.patientId=patients.patientId')->where("doctor_ngh_patient.doctorId =".$docId);
-    	$dataProvider = new ActiveDataProvider([
-    			'query' => $patientinfoModel,
-    			'sort' => ['attributes' => ['nursingHomeName','firstName','lastName','patientRequestStatus']],
-    	]);
+    	$result = array();
+    	$docId = 0;
+    	$token = '';
+    	$requestStatus = 'PROCESSING';
+    	if(isset($_GET['docId']) && $_GET['docId'] != '')
+    	{
+    		$docId = $_GET['docId'];
+    	}
+    	 
+    	if(isset($_GET['token']) && $_GET['token'] != '')
+    	{
+    		$token = $_GET['token'];
+    	}
+    	if(isset($_GET['status']) && $_GET['status'] != '')
+    	{
+    		$requestStatus = $_GET['status'];
+    	}
+    	 
+    	if($docId == 0 ||  $token == '')
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "Please you can pass valid inputs";
+    		return $result;exit();
+    	}
+    	$result['status'] = 'success';
+    	$query = DoctorNghPatient::find()->select('doctor_ngh_patient.patientRequestStatus,doctor_ngh_patient.patientHistoryId,nursinghomes.nursingHomeName,patients.firstName,patients.lastName,patients.patientId,patients.patientUniqueId')->innerJoin('nursinghomes','doctor_ngh_patient.nugrsingId=nursinghomes.nuserId')->innerJoin('patient_information','doctor_ngh_patient.patientHistoryId=patient_information.patientInfoId')->innerJoin('patients','patient_information.patientId=patients.patientId')->where("doctor_ngh_patient.doctorId =".$docId." AND doctor_ngh_patient.patientRequestStatus='$requestStatus'")->all();
+    	$i= 0;
     	
-    	return $this->render('patientRequests', [
-    			'dataProvider' => $dataProvider,
-    	]); */
-    	
-    	$searchModel = new DoctorNghPatientSearch();
-    	$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-    	
-    	return $this->render('patientRequests', [
-    			'searchModel' => $searchModel,
-    			'dataProvider' => $dataProvider,
-    	]);
-    	
-    	//print_r($patientinfoModel);exit();
+    	foreach ($query as $patient)
+    	{
+    		$result['DocPatientRequests'][$i]['nursingHomeName']= $patient->nursingHomeName;
+    		$result['DocPatientRequests'][$i]['firstName']= $patient->firstName;
+    		$result['DocPatientRequests'][$i]['lastName']= $patient->lastName;
+    		$result['DocPatientRequests'][$i]['patientId']= $patient->patientId;
+    		$result['DocPatientRequests'][$i]['patientHistoryId']= $patient->patientHistoryId;
+    		$result['DocPatientRequests'][$i]['patientRequestStatus']= $patient->patientRequestStatus;
+    		$result['DocPatientRequests'][$i]['patientUniqueId']= $patient->patientUniqueId;
+    		$i++;
+    	}
+    	return $result;
+    	//print_r($result);exit();
     }
     
     public function actionPatientInfo($phsId)
