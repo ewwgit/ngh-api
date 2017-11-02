@@ -12,6 +12,8 @@ class ChangePasswordForm extends Model
 {
     public $password;
     public $confirmpassword;
+    public $oldPassword;
+    public $id;
 
     /**
      * @var \common\models\User
@@ -27,15 +29,15 @@ class ChangePasswordForm extends Model
     public function rules()
     {
         return [
-            ['password', 'required'],
-            ['password', 'string', 'min' => 6],
-        		[['confirmpassword'], 'compare', 'compareAttribute' => 'password'],
-        		[['password'],'safe'],
+            [['password','oldPassword','id'], 'safe'],
+           // ['password', 'string', 'min' => 6],
+        		//[['confirmpassword'], 'compare', 'compareAttribute' => 'password'],
+        		//[['password'],'safe'],
         		
-        		[
+        		/* [
         				'confirmpassword',
         				'required',
-        		],
+        		], */
         ];
     }
 

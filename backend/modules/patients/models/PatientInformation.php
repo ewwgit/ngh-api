@@ -23,6 +23,9 @@ use Yii;
  */
 class PatientInformation extends \yii\db\ActiveRecord
 {
+	public $name;
+	public $documentUrl;
+	public $patientRequestStatus;
     /**
      * @inheritdoc
      */
@@ -37,6 +40,7 @@ class PatientInformation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+        		[['name','patientRequestStatus'],'safe'],
             /* [['patientId', 'height', 'weight', 'respirationRate', 'BPLeftArm', 'BPRightArm', 'pulseRate', 'temparatureType', 'diseases', 'allergicMedicine', 'createdDate', 'patientCompliant'], 'required'],
             [['patientId'], 'integer'],
             [['createdDate'], 'safe'],

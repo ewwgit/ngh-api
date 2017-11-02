@@ -28,6 +28,7 @@ use yii\data\ActiveDataProvider;
 use app\modules\patients\models\Patients;
 use app\modules\patients\models\PatientInformation;
 use app\modules\patients\models\DoctorNghPatientSearch;
+use app\models\UserSecurityTokens;
 
 /**
  * DoctorsController implements the CRUD actions for Doctors model.
@@ -821,8 +822,37 @@ class DoctorsController extends Controller
     		]);
     	}
     }
-    public function actionProfileview($uid)
+    public function actionProfileview()
     {
+    	$uid = 0;
+    	$token = '';
+    	$result = array();
+    	if(isset($_GET['uid']) && $_GET['uid'] != '')
+    	{
+    		$uid = $_GET['uid'];
+    	}
+    	
+    	
+    	if(isset($_GET['token']) && $_GET['token'] != '')
+    	{
+    		$token = $_GET['token'];
+    	}
+    	
+    	if($token == '' || $uid == 0)
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "Please you can pass valid inputs";
+    		return $result;exit();
+    	}
+    	
+    	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $uid,'status' =>'Active','token' => $token])->one();
+    	
+    	if(empty($usertokenAccess))
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "You don't have valid token";
+    		return $result;exit();
+    	}
     	$usermodel = $this->finduserModel($uid);
     	//print_r($usermodel->id);exit();
     	$model = Doctors::find()->where(['userId' =>$usermodel->id])->one();
@@ -863,13 +893,31 @@ class DoctorsController extends Controller
     		$docspeci = Specialities::find()->select('specialityName')->where( ['spId' => $dsary[$m]])->asArray()->one();
     		$docspeciary[] = $docspeci['specialityName'];
     	}
-    	 
-    	 
-    	//$model->qualification = $docqualiary;
-    	 
-    	return $this->render('profileview', [
-    			'model' => $model,'docqualiary' =>$docqualiary,'docspeciary'=>$docspeciary,
-    	]);
+    	
+    	$result['status'] = 'success';
+    	$result['errors'] = '';
+    	$result['username'] = $usermodel->username;
+    	$result['email'] = $usermodel->email;
+    	$result['doctorUniqueId'] = $model->doctorUniqueId;
+    	$result['name'] = $model->name;
+    	$result['stateName'] = $model->stateName;
+    	$result['countryName'] = $model->countryName;
+    	$result['address'] = $model->address;
+    	$result['permanentAddress'] = $model->permanentAddress;
+    	$result['pinCode'] = $model->pinCode;
+    	$result['doctorMobile'] = $model->doctorMobile;
+    	$result['doctorImage'] = 'http://expertwebworx.in/nghospital/backend/web/'.$model->doctorImage;
+    	$result['summery'] = $model->summery;
+    	$result['APMC'] = $model->APMC;
+    	$result['TSMC'] = $model->TSMC;
+    	$result['availableStatus'] = $model->availableStatus;
+    	$result['qualification'] = implode(", ",$docqualiary);
+    	$result['specialities'] = implode(", ",$docspeciary);
+    	
+    	
+    	return $result;
+    	
+    	
     }
     
     
@@ -881,16 +929,17 @@ class DoctorsController extends Controller
      */
     
     
-    public function actionResetPassword($id)
+    public function actionResetPassword()
     {
-    	
-    	try {
-    		$model = new ChangePasswordForm();
-    	} catch (InvalidParamException $e) {
-    		throw new BadRequestHttpException($e->getMessage());
+    	$result = array();
+    	$model = new ChangePasswordForm();
+    	if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+    		$model->resetPassword($model->id);
+    		$result['status'] = 'success';
+    		return $result;
     	}
     
-    	if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword($id)) {
+    	/* if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword($id)) {
     		Yii::$app->getSession()->setFlash('success', 'New password was saved.');
     
     		return $this->redirect(['index']);;
@@ -898,7 +947,7 @@ class DoctorsController extends Controller
     
     	return $this->render('resetPassword', [
     			'model' => $model,
-    	]);
+    	]); */
     	
     }
     
@@ -992,6 +1041,42 @@ class DoctorsController extends Controller
     	return $this->render('patientInfo',
     			['model' => $model,'mpatientModel' => $mpatientModel,'mpatientInformationModel' => $mpatientInformationModel]);
     	//print_r($avialableDoctors);exit();
+    }
+    
+    public function actionPrescription()
+    {
+    	$model = new DoctorNghPatient();
+    	
+    	$result = array();
+    	
+    	if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+    	
+    		$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $model->doctorId,'status' =>'Active','token' => $model->token])->one();
+    		 
+    		if(empty($usertokenAccess))
+    		{
+    			$result['status'] = 'fail';
+    			$result['errors'] = "You don't have valid token";
+    			return $result;exit();
+    		}
+    		$requestInfo = DoctorNghPatient::find()->where(['doctorId' => $model->doctorId,'nugrsingId' => $model->nugrsingId,'patientId' => $model->patientId,'patientHistoryId' => $model->patientHistoryId,'patientRequestStatus' => 'PROCESSING'])->one();
+    		if(empty($requestInfo))
+    		{
+    			$result['status'] = 'fail';
+    			$result['errors'] = "This Record not exist";
+    			return $result;exit();
+    		}
+    		else{
+    			$requestInfo->treatment = $model->treatment;
+    			$requestInfo->patientRequestStatus = 'COMPLETED';
+    			$requestInfo->updatedBy = $model->doctorId;
+    			$requestInfo->updatedDate = date('Y-m-d H:i:s');
+    			$requestInfo->update();
+    			$result['status'] = 'success';
+    		}
+    		
+    		return $result;
+    	}
     }
     
 }

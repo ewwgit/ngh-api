@@ -21,6 +21,7 @@ use app\modules\qualifications\models\Qualifications;
 use app\modules\doctors\models\DoctorsSpecialities;
 use app\modules\specialities\models\Specialities;
 use app\models\UserSecurityTokens;
+use yii\helpers\Url;
 /**
  * PatientsController implements the CRUD actions for Patients model.
  */
@@ -85,6 +86,15 @@ class PatientsController extends Controller
         for($i=0; $i < count($models); $i++)
         {
         	//print_r($models[$i]['patientsinfonew']);exit();
+        	
+        	if($models[$i]['patientId'] == null)
+        	{
+        		$result['patientsInformation'][$i]['patientId'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['patientId'] = $models[$i]['patientId'];
+        	}
+        	
         	if($models[$i]['firstName'] == null)
         	{
         		$result['patientsInformation'][$i]['name'] = '';
@@ -599,15 +609,186 @@ class PatientsController extends Controller
     	}
     }
 
-    public function actionPatientshistoryview($infoid)
+    public function actionPatientshistoryview()
     {
-    	$model = $this->findinfoModel($infoid);
+    	
+    	$patientInfoId = 0;
+    	$nghId = 0;
+    	$token = '';
+    	$result = array();
+    	if(isset($_GET['nghId']) && $_GET['nghId'] != '')
+    	{
+    		$nghId = $_GET['nghId'];
+    	}
+    	if(isset($_GET['patientInfoId']) && $_GET['patientInfoId'] != '')
+    	{
+    		$patientInfoId = $_GET['patientInfoId'];
+    	}
+    	 
+    	if(isset($_GET['token']) && $_GET['token'] != '')
+    	{
+    		$token = $_GET['token'];
+    	}
+    	 
+    	if($patientInfoId == 0 ||  $token == '' || $nghId == 0)
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "Please you can pass valid inputs";
+    		return $result;exit();
+    	}
+    	 
+    	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $nghId,'status' =>'Active','token' => $token])->one();
+    	
+    	if(empty($usertokenAccess))
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "You don't have valid token";
+    		return $result;exit();
+    	}
+    	$result['status'] = 'success';
+    	$result['errors'] = '';
+    	$model = $this->findinfoModel($patientInfoId);
     	$patmodel = Patients::find()->where(['patientId' =>$model->patientId])->one();
-    	//print_r($model->height);exit();
+    	$result['patentBasicInfo'][0]['firstName']=$patmodel->firstName;
+    	$result['patentBasicInfo'][0]['lastName']=$patmodel->lastName;
+    	$result['patentBasicInfo'][0]['gender']=$patmodel->gender;
+    	$result['patentBasicInfo'][0]['age']=$patmodel->age;
+    	$result['patentBasicInfo'][0]['dateOfBirth']=$patmodel->dateOfBirth;
+    	$result['patentBasicInfo'][0]['patientUniqueId']=$patmodel->patientUniqueId;
+    	$result['patentBasicInfo'][0]['countryName']=$patmodel->countryName;
+    	$result['patentBasicInfo'][0]['stateName']=$patmodel->stateName;
+    	$result['patentBasicInfo'][0]['district']=$patmodel->district;
+    	$result['patentBasicInfo'][0]['city']=$patmodel->city;
+    	$result['patentBasicInfo'][0]['mandal']=$patmodel->mandal;
+    	$result['patentBasicInfo'][0]['village']=$patmodel->village;
+    	$result['patentBasicInfo'][0]['pinCode']=$patmodel->pinCode;
+    	$result['patentBasicInfo'][0]['mobile']=$patmodel->mobile;
+    	if($patmodel->patientImage == '')
+    	{
+    	$result['patentBasicInfo'][0]['patientImage']='';
+    	}
+    	else{
+    		$result['patentBasicInfo'][0]['patientImage']='http://expertwebworx.in/nghospital/backend/web/'.$patmodel->patientImage;
+    	}
+    	
+    	$result['patentHistoryInfo'][0]['height']=$model->height;
+    	$result['patentHistoryInfo'][0]['weight']=$model->weight;
+    	$result['patentHistoryInfo'][0]['respirationRate']=$model->respirationRate;
+    	$result['patentHistoryInfo'][0]['bp']=$model->BPLeftArm;
+    	$result['patentHistoryInfo'][0]['pulseRate']=$model->pulseRate;
+    	$result['patentHistoryInfo'][0]['temparature']=$model->temparatureType;
+    	$result['patentHistoryInfo'][0]['diseases']=$model->diseases;
+    	$result['patentHistoryInfo'][0]['allergicMedicine']=$model->allergicMedicine;
+    	$result['patentHistoryInfo'][0]['patientCompliant']=$model->patientCompliant;
+    	$prescriptionInfo = DoctorNghPatient::find()->where(['patientHistoryId' => $patientInfoId , 'patientRequestStatus' => 'COMPLETED'])->one();
+    	$result['prescriptionInfo'] = array();
+    	if(!empty($prescriptionInfo))
+    	{
+    		$result['prescriptionInfo'][0]['treatment'] = $prescriptionInfo->treatment;
+    		$doctoInfo = Doctors::find()->where(['userId' => $prescriptionInfo->doctorId])->one();
+    		if(!empty($doctoInfo)){
+    		$result['prescriptionInfo'][0]['doctorName'] = $doctoInfo->name;
+    		}
+    		else{
+    			$result['prescriptionInfo'][0]['doctorName'] = '';
+    		}
+    		$result['prescriptionInfo'][0]['updatedDate'] = $prescriptionInfo->updatedDate;
+    	}
+    	//print_r($prescriptionInfo);exit();
+    	return $result;
+    	
+    }
     
-    	return $this->render('patientshistoryview', [
-    			'model' => $this->findinfoModel($infoid),'patmodel' => $patmodel,
-    	]);
+    public function actionPatientshistoryviewdoctor()
+    {
+    	 
+    	$patientInfoId = 0;
+    	$docId = 0;
+    	$token = '';
+    	$result = array();
+    	if(isset($_GET['docId']) && $_GET['docId'] != '')
+    	{
+    		$docId = $_GET['docId'];
+    	}
+    	if(isset($_GET['patientInfoId']) && $_GET['patientInfoId'] != '')
+    	{
+    		$patientInfoId = $_GET['patientInfoId'];
+    	}
+    
+    	if(isset($_GET['token']) && $_GET['token'] != '')
+    	{
+    		$token = $_GET['token'];
+    	}
+    
+    	if($patientInfoId == 0 ||  $token == '' || $docId == 0)
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "Please you can pass valid inputs";
+    		return $result;exit();
+    	}
+    
+    	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $docId,'status' =>'Active','token' => $token])->one();
+    	 
+    	if(empty($usertokenAccess))
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "You don't have valid token";
+    		return $result;exit();
+    	}
+    	$result['status'] = 'success';
+    	$result['errors'] = '';
+    	$model = $this->findinfoModel($patientInfoId);
+    	$patmodel = Patients::find()->where(['patientId' =>$model->patientId])->one();
+    	//print_r($patmodel);exit();
+    	$result['patentBasicInfo'][0]['firstName']=$patmodel->firstName;
+    	$result['patentBasicInfo'][0]['lastName']=$patmodel->lastName;
+    	$result['patentBasicInfo'][0]['gender']=$patmodel->gender;
+    	$result['patentBasicInfo'][0]['age']=$patmodel->age;
+    	$result['patentBasicInfo'][0]['dateOfBirth']=$patmodel->dateOfBirth;
+    	$result['patentBasicInfo'][0]['patientUniqueId']=$patmodel->patientUniqueId;
+    	$result['patentBasicInfo'][0]['countryName']=$patmodel->countryName;
+    	$result['patentBasicInfo'][0]['stateName']=$patmodel->stateName;
+    	$result['patentBasicInfo'][0]['district']=$patmodel->district;
+    	$result['patentBasicInfo'][0]['city']=$patmodel->city;
+    	$result['patentBasicInfo'][0]['mandal']=$patmodel->mandal;
+    	$result['patentBasicInfo'][0]['village']=$patmodel->village;
+    	$result['patentBasicInfo'][0]['pinCode']=$patmodel->pinCode;
+    	$result['patentBasicInfo'][0]['mobile']=$patmodel->mobile;
+    	$result['patentBasicInfo'][0]['nghId']=$patmodel->createdBy;
+    	if($patmodel->patientImage == '')
+    	{
+    		$result['patentBasicInfo'][0]['patientImage']='';
+    	}
+    	else{
+    		$result['patentBasicInfo'][0]['patientImage']='http://expertwebworx.in/nghospital/backend/web/'.$patmodel->patientImage;
+    	}
+    	 
+    	$result['patentHistoryInfo'][0]['height']=$model->height;
+    	$result['patentHistoryInfo'][0]['weight']=$model->weight;
+    	$result['patentHistoryInfo'][0]['respirationRate']=$model->respirationRate;
+    	$result['patentHistoryInfo'][0]['bp']=$model->BPLeftArm;
+    	$result['patentHistoryInfo'][0]['pulseRate']=$model->pulseRate;
+    	$result['patentHistoryInfo'][0]['temparature']=$model->temparatureType;
+    	$result['patentHistoryInfo'][0]['diseases']=$model->diseases;
+    	$result['patentHistoryInfo'][0]['allergicMedicine']=$model->allergicMedicine;
+    	$result['patentHistoryInfo'][0]['patientCompliant']=$model->patientCompliant;
+    	
+    	$prescriptionInfo = DoctorNghPatient::find()->where(['patientHistoryId' => $patientInfoId , 'patientRequestStatus' => 'COMPLETED'])->one();
+    	$result['prescriptionInfo'] = array();
+    	if(!empty($prescriptionInfo))
+    	{
+    		$result['prescriptionInfo'][0]['treatment'] = $prescriptionInfo->treatment;
+    		$doctoInfo = Doctors::find()->where(['userId' => $prescriptionInfo->doctorId])->one();
+    		if(!empty($doctoInfo)){
+    			$result['prescriptionInfo'][0]['doctorName'] = $doctoInfo->name;
+    		}
+    		else{
+    			$result['prescriptionInfo'][0]['doctorName'] = '';
+    		}
+    		$result['prescriptionInfo'][0]['updatedDate'] = $prescriptionInfo->updatedDate;
+    	}
+    	return $result;
+    	 
     }
     public function actionPatientshistorydocview($infoid)
     {
@@ -826,5 +1007,199 @@ class PatientsController extends Controller
     	}
     	 
     	
+    }
+    
+    public function actionPatientpreviousrecords()
+    {
+        $patientId = 0;
+        $nghId = 0;
+    	$token = '';
+    	$result = array();
+    	if(isset($_GET['nghId']) && $_GET['nghId'] != '')
+    	{
+    		$nghId = $_GET['nghId'];
+    	}
+    	if(isset($_GET['patientId']) && $_GET['patientId'] != '')
+    	{
+    		$patientId = $_GET['patientId'];
+    	}
+    	
+    	if(isset($_GET['token']) && $_GET['token'] != '')
+    	{
+    		$token = $_GET['token'];
+    	}
+    	
+    	if($patientId == 0 ||  $token == '' || $nghId == 0)
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "Please you can pass valid inputs";
+    		return $result;exit();
+    	}
+    	
+    	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $nghId,'status' =>'Active','token' => $token])->one();
+    	 
+    	if(empty($usertokenAccess))
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "You don't have valid token";
+    		return $result;exit();
+    	}
+    	
+    	$PrevousInfo = PatientInformation::find()->select(['patient_information.patientInfoId','patient_information.createdDate','doctors.name','doctor_ngh_patient.patientRequestStatus'])->leftJoin('doctor_ngh_patient','patient_information.patientInfoId=doctor_ngh_patient.patientHistoryId')->leftJoin('doctors','doctor_ngh_patient.doctorId=doctors.userId')->where(['patient_information.patientId' =>$patientId])->orderBy('patient_information.createdDate DESC')->all();
+    	$i= 0;
+    	$result['status'] = 'success';
+    	$result['errors'] = '';
+    	if(empty($PrevousInfo)){
+    		$result['pateintpreviousInfo'] = [];
+    	}
+    	else{
+    	foreach ($PrevousInfo as $prev)
+    	{
+    		$result['pateintpreviousInfo'][$i]['patientInfoId']= $prev->patientInfoId;
+    		$result['pateintpreviousInfo'][$i]['createdDate']= $prev->createdDate;
+    		if($prev->name == NULL)
+    		{
+    			$result['pateintpreviousInfo'][$i]['name']= '';
+    		}
+    		else{
+    		$result['pateintpreviousInfo'][$i]['name']= $prev->name;
+    		}
+    		
+    		if($prev->patientRequestStatus == NULL)
+    		{
+    			$result['pateintpreviousInfo'][$i]['patientRequestStatus']= 'PENDING';
+    		}
+    		else{
+    			$result['pateintpreviousInfo'][$i]['patientRequestStatus']= $prev->patientRequestStatus;
+    		}
+    		
+    		
+    		$i++;
+    	}
+    	}
+    	return $result;
+    	//print_r($PrevousInfo);exit();
+    }
+    
+    
+    public function actionPatientpreviousdocuments()
+    {
+        $patientId = 0;
+        $nghId = 0;
+    	$token = '';
+    	$result = array();
+    	if(isset($_GET['nghId']) && $_GET['nghId'] != '')
+    	{
+    		$nghId = $_GET['nghId'];
+    	}
+    	if(isset($_GET['patientId']) && $_GET['patientId'] != '')
+    	{
+    		$patientId = $_GET['patientId'];
+    	}
+    	
+    	if(isset($_GET['token']) && $_GET['token'] != '')
+    	{
+    		$token = $_GET['token'];
+    	}
+    	
+    	if($patientId == 0 ||  $token == '' || $nghId == 0)
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "Please you can pass valid inputs";
+    		return $result;exit();
+    	}
+    	
+    	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $nghId,'status' =>'Active','token' => $token])->one();
+    	 
+    	if(empty($usertokenAccess))
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "You don't have valid token";
+    		return $result;exit();
+    	}
+    	 
+    	//$PrevousInfo = PatientDocuments::find()->where(['patientInfoId'=> $patienthistoryId])->all();
+    	$PrevousInfo = PatientInformation::find()->select(['patient_information.patientInfoId','patient_information.createdDate','patient_documents.documentUrl'])->innerJoin('patient_documents','patient_information.patientInfoId=patient_documents.patientInfoId')->where(['patient_information.patientId' =>$patientId])->orderBy('patient_information.createdDate DESC')->all();
+    	$i= 0;
+    	$result['status'] = 'success';
+    	$result['errors'] = '';
+    	if(empty($PrevousInfo)){
+    		$result['pateintpreviousDocInfo'] = [];
+    	}
+    	else{
+    		foreach ($PrevousInfo as $prev)
+    		{
+    			$result['pateintpreviousDocInfo'][$i]['patientInfoId']= $prev->patientInfoId;
+    			$result['pateintpreviousDocInfo'][$i]['createdDate']= $prev->createdDate;
+    			$result['pateintpreviousDocInfo'][$i]['documentUrl']= 'http://expertwebworx.in/nghospital/backend/web/'.$prev->documentUrl;
+    			
+    
+    			$i++;
+    		}
+    	}
+    	return $result;
+    	//print_r($PrevousInfo);exit();
+    }
+    
+    
+    public function actionUpdatepatient()
+    {
+    	$model = new Patients();
+    	$patmodel = new PatientInformation();
+    	$newModel = new PatientDocuments();
+    	 
+    	$result = array();
+    
+    	if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+    
+    		$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $model->nghId,'status' =>'Active','token' => $model->token])->one();
+    		 
+    		if(empty($usertokenAccess))
+    		{
+    			$result['status'] = 'fail';
+    			$result['errors'] = "You don't have valid token";
+    			return $result;exit();
+    		}
+    		$model->BPLeftArm = $model->bp;
+    		$model->createdBy = $model->nghId;
+    		$model->updatedBy = $model->nghId;
+    		
+    			 
+    			
+    			$patientIdnew = $model->pId;
+    			
+    			 
+    			$patmodel->BPLeftArm = $model->BPLeftArm;
+    			$patmodel->weight = $model->weight;
+    			$patmodel->height = $model->height;
+    			$patmodel->respirationRate = $model->respirationRate;
+    			$patmodel->pulseRate = $model->pulseRate;
+    			$patmodel->diseases = $model->diseases;
+    			$patmodel->allergicMedicine = $model->allergicMedicine;
+    			$patmodel->patientCompliant = $model->patientCompliant;
+    			$patmodel->temparatureType = $model->temparatureType;
+    			$patmodel->createdDate = date('Y-m-d H:i:s');
+    			$patmodel->patientId = $patientIdnew;
+    			$patmodelSuccess = $patmodel->save();    			
+    			$patienthstId = $patmodel->patientInfoId;
+    			 
+    			if($patmodelSuccess == 1){
+    				 
+    				$result['status'] = 'success';
+    				$result['patientId'] = $patientIdnew;
+    				$result['patientHistoryId'] = $patienthstId;
+    				$result['errors'] = [];
+    			}
+    			else{
+    				$result['status'] = 'fail';
+    				$result['errors'][0] = 'Some error exist';
+    			}
+    			 
+    			 
+    		
+    		 
+    		return $result;
+    
+    	}
     }
 }

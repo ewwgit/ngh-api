@@ -16,6 +16,7 @@ use backend\models\SignupForm;
 use app\models\UserMain;
 use yii\web\UploadedFile;
 use backend\models\ChangePasswordForm;
+use app\models\UserSecurityTokens;
 
 /**
  * NursinghomesController implements the CRUD actions for Nursinghomes model.
@@ -395,17 +396,58 @@ class NursinghomesController extends Controller
     		]);
     	}
     }
-    public function actionProfileview($uid)
+    public function actionProfileview()
     {
+        $uid = 0;
+    	$token = '';
+    	$result = array();
+    	if(isset($_GET['uid']) && $_GET['uid'] != '')
+    	{
+    		$uid = $_GET['uid'];
+    	}
+    	
+    	
+    	if(isset($_GET['token']) && $_GET['token'] != '')
+    	{
+    		$token = $_GET['token'];
+    	}
+    	
+    	if($token == '' || $uid == 0)
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "Please you can pass valid inputs";
+    		return $result;exit();
+    	}
+    	
+    	$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $uid,'status' =>'Active','token' => $token])->one();
+    	
+    	if(empty($usertokenAccess))
+    	{
+    		$result['status'] = 'fail';
+    		$result['errors'] = "You don't have valid token";
+    		return $result;exit();
+    	}
     	$usermodel = $this->finduserModel($uid);
     	$model = Nursinghomes::find()->where(['nuserId' =>$usermodel->id])->one();
-    	if (!$model) {
-    		throw new NotFoundHttpException('model not found');
-    	}
-    	return $this->render('profileview', [
-    			'model' => $model,
-    			// 'model' => $model,
-    	]);
+    	
+    	$result['status'] = 'success';
+    	$result['errors'] = '';
+    	$result['username'] = $usermodel->username;
+    	$result['email'] = $usermodel->email;
+    	$result['nurshingUniqueId'] = $model->nurshingUniqueId;
+    	$result['contactPerson'] = $model->contactPerson;
+    	$result['mobile'] = $model->mobile;
+    	$result['landline'] = $model->landline;
+    	$result['city'] = $model->city;
+    	$result['stateName'] = $model->stateName;
+    	$result['countryName'] = $model->countryName;
+    	$result['pinCode'] = $model->pinCode;
+    	$result['address'] = $model->address;
+    	$result['nursingImage'] = 'http://expertwebworx.in/nghospital/backend/web/'.$model->nursingImage;
+    	$result['description'] = $model->description;
+    	$result['nursingHomeName'] = $model->nursingHomeName;
+    	
+    	return $result;
     }
     
     /**

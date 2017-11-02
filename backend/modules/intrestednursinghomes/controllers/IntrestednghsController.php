@@ -94,7 +94,7 @@ class IntrestednghsController extends Controller
 			{
 			
 				$result['status'] = 'fail';
-				$result['errors'][] = 'This email has already been taken';
+				$result['errors'] = 'This email has already been taken';
 				return $result; exit();
 			}
 			else{
@@ -103,7 +103,7 @@ class IntrestednghsController extends Controller
 				{
 			
 					$result['status'] = 'fail';
-					$result['errors'][] = 'This email has already been taken';
+					$result['errors'] = 'This email has already been taken';
 					return $result; exit();
 				}
 			}
@@ -112,7 +112,7 @@ class IntrestednghsController extends Controller
 			{
 				
         		$result['status'] = 'fail';
-        		$result['errors'][] = 'This mobile number has already been taken';
+        		$result['errors'] = 'This mobile number has already been taken';
         		return $result; exit();
 			}
 			else{
@@ -121,7 +121,7 @@ class IntrestednghsController extends Controller
 				{
 				
 					$result['status'] = 'fail';
-					$result['errors'][] = 'This mobile number has already been taken';
+					$result['errors'] = 'This mobile number has already been taken';
 					return $result; exit();
 				}
 			}
