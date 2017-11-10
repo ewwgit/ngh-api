@@ -649,20 +649,107 @@ class PatientsController extends Controller
     	$result['errors'] = '';
     	$model = $this->findinfoModel($patientInfoId);
     	$patmodel = Patients::find()->where(['patientId' =>$model->patientId])->one();
-    	$result['patentBasicInfo'][0]['firstName']=$patmodel->firstName;
-    	$result['patentBasicInfo'][0]['lastName']=$patmodel->lastName;
-    	$result['patentBasicInfo'][0]['gender']=$patmodel->gender;
-    	$result['patentBasicInfo'][0]['age']=$patmodel->age;
-    	$result['patentBasicInfo'][0]['dateOfBirth']=$patmodel->dateOfBirth;
-    	$result['patentBasicInfo'][0]['patientUniqueId']=$patmodel->patientUniqueId;
-    	$result['patentBasicInfo'][0]['countryName']=$patmodel->countryName;
-    	$result['patentBasicInfo'][0]['stateName']=$patmodel->stateName;
-    	$result['patentBasicInfo'][0]['district']=$patmodel->district;
-    	$result['patentBasicInfo'][0]['city']=$patmodel->city;
-    	$result['patentBasicInfo'][0]['mandal']=$patmodel->mandal;
-    	$result['patentBasicInfo'][0]['village']=$patmodel->village;
-    	$result['patentBasicInfo'][0]['pinCode']=$patmodel->pinCode;
-    	$result['patentBasicInfo'][0]['mobile']=$patmodel->mobile;
+    	if($result['patentBasicInfo'][0]['firstName'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['firstName'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['firstName']=$patmodel->firstName;
+    	}
+    	if($result['patentBasicInfo'][0]['lastName'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['lastName'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['lastName']=$patmodel->lastName;
+    	}
+    	if($result['patentBasicInfo'][0]['gender'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['gender'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['gender']=$patmodel->gender;
+    	}
+    	if($result['patentBasicInfo'][0]['age'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['age'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['age']=$patmodel->age;
+    	}
+    	if($result['patentBasicInfo'][0]['dateOfBirth'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['dateOfBirth'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['dateOfBirth']=$patmodel->dateOfBirth;
+    	}
+    	if($result['patentBasicInfo'][0]['patientUniqueId'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['patientUniqueId'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['patientUniqueId']=$patmodel->patientUniqueId;
+    	}
+    	if($result['patentBasicInfo'][0]['countryName'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['countryName'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['countryName']=$patmodel->countryName;
+    	}
+    	if($result['patentBasicInfo'][0]['stateName'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['stateName'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['stateName']=$patmodel->stateName;
+    	}
+    	if($result['patentBasicInfo'][0]['district'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['district'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['district']=$patmodel->district;
+    	}
+    	if($result['patentBasicInfo'][0]['city'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['city'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['city']=$patmodel->city;
+    	}
+    	if($result['patentBasicInfo'][0]['mandal'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['mandal'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['mandal']=$patmodel->mandal;
+    	}
+    	if($result['patentBasicInfo'][0]['village'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['village'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['village']=$patmodel->village;
+    	}
+    	if($result['patentBasicInfo'][0]['pinCode'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['pinCode'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['pinCode']=$patmodel->pinCode;
+    	}
+    	if($result['patentBasicInfo'][0]['mobile'] == null)
+    	{
+    		$result['patentBasicInfo'][0]['mobile'] = '';
+    	}
+    	else {
+    		$result['patentBasicInfo'][0]['mobile']=$patmodel->mobile;
+    	}
+    	
+    	
+    	
     	if($patmodel->patientImage == '')
     	{
     	$result['patentBasicInfo'][0]['patientImage']='';
@@ -671,15 +758,79 @@ class PatientsController extends Controller
     		$result['patentBasicInfo'][0]['patientImage']='http://expertwebworx.in/nghospital/backend/web/'.$patmodel->patientImage;
     	}
     	
-    	$result['patentHistoryInfo'][0]['height']=$model->height;
-    	$result['patentHistoryInfo'][0]['weight']=$model->weight;
-    	$result['patentHistoryInfo'][0]['respirationRate']=$model->respirationRate;
-    	$result['patentHistoryInfo'][0]['bp']=$model->BPLeftArm;
-    	$result['patentHistoryInfo'][0]['pulseRate']=$model->pulseRate;
-    	$result['patentHistoryInfo'][0]['temparature']=$model->temparatureType;
-    	$result['patentHistoryInfo'][0]['diseases']=$model->diseases;
-    	$result['patentHistoryInfo'][0]['allergicMedicine']=$model->allergicMedicine;
-    	$result['patentHistoryInfo'][0]['patientCompliant']=$model->patientCompliant;
+    	if($result['patentHistoryInfo'][0]['height'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['height'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['height'] = $model->height;
+    	}
+    	
+    	if($result['patentHistoryInfo'][0]['weight'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['weight'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['weight'] = $model->weight;
+    	}
+    	
+    	if($result['patentHistoryInfo'][0]['respirationRate'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['respirationRate'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['respirationRate'] = $model->respirationRate;
+    	}
+    	
+    	if($result['patentHistoryInfo'][0]['bp'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['bp'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['bp'] = $model->bp;
+    	}
+    	
+    	if($result['patentHistoryInfo'][0]['pulseRate'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['pulseRate'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['pulseRate'] = $model->pulseRate;
+    	}
+    	
+    	if($result['patentHistoryInfo'][0]['temparature'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['temparature'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['temparature'] = $model->temparature;
+    	}
+    	
+    	if($result['patentHistoryInfo'][0]['diseases'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['diseases'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['diseases'] = $model->diseases;
+    	}
+    	
+    	if($result['patentHistoryInfo'][0]['allergicMedicine'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['allergicMedicine'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['allergicMedicine'] = $model->allergicMedicine;
+    	}
+    	
+    	if($result['patentHistoryInfo'][0]['patientCompliant'] == null)
+    	{
+    		$result['patentHistoryInfo'][0]['patientCompliant'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['patientCompliant'] = $model->patientCompliant;
+    	}
+    	
+    	
     	$prescriptionInfo = DoctorNghPatient::find()->where(['patientHistoryId' => $patientInfoId , 'patientRequestStatus' => 'COMPLETED'])->one();
     	$result['prescriptionInfo'] = array();
     	if(!empty($prescriptionInfo))
