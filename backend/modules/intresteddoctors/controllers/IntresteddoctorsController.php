@@ -78,6 +78,7 @@ class IntresteddoctorsController extends Controller
         if ($model->load(\Yii::$app->getRequest()->getBodyParams(), ''))
 		{
 			$model->createdDate = date('Y-m-d H:i:s');
+			$model->status = 'Active';
         	if($model->validate())
         	{
         	  if($model->save())
