@@ -88,13 +88,14 @@ class IntrestednghsController extends Controller
         if ($model->load(\Yii::$app->getRequest()->getBodyParams(), ''))
 		{
 			$model->createdDate = date('Y-m-d H:i:s');
+			$model->status = 'Active';
 			
 			$emailcheck = IntrestedDoctors::find()->where(['email' => $model->email])->one();
 			if($emailcheck)
 			{
 			
 				$result['status'] = 'fail';
-				$result['errors'] = 'This email has already been taken';
+				$result['errors'][] = 'This email has already been taken';
 				return $result; exit();
 			}
 			else{
@@ -103,7 +104,7 @@ class IntrestednghsController extends Controller
 				{
 			
 					$result['status'] = 'fail';
-					$result['errors'] = 'This email has already been taken';
+					$result['errors'][] = 'This email has already been taken';
 					return $result; exit();
 				}
 			}
@@ -112,7 +113,7 @@ class IntrestednghsController extends Controller
 			{
 				
         		$result['status'] = 'fail';
-        		$result['errors'] = 'This mobile number has already been taken';
+        		$result['errors'][] = 'This mobile number has already been taken';
         		return $result; exit();
 			}
 			else{
@@ -121,7 +122,7 @@ class IntrestednghsController extends Controller
 				{
 				
 					$result['status'] = 'fail';
-					$result['errors'] = 'This mobile number has already been taken';
+					$result['errors'][] = 'This mobile number has already been taken';
 					return $result; exit();
 				}
 			}
@@ -161,7 +162,7 @@ class IntrestednghsController extends Controller
 				$docModel->description = $model->description;
 				$docModel->mobile = $model->mobile;
 				$docModel->createdDate = $model->createdDate;
-				
+				$docModel->createdDate = $model->status;
 				if($docModel->validate())
 				{
 					if($docModel->save())
