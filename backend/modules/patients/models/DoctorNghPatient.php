@@ -28,6 +28,10 @@ class DoctorNghPatient extends \yii\db\ActiveRecord
 	public $lastName;
 	public $token;
 	public $patientUniqueId;
+	public $startdate;
+	public $enddate;
+	public $allcount;
+	public $name;
     /**
      * @inheritdoc
      */
@@ -45,10 +49,10 @@ class DoctorNghPatient extends \yii\db\ActiveRecord
             [['doctorId', 'nugrsingId', 'patientId', 'patientHistoryId', 'treatment', 'patientRequestStatus', 'createdBy', 'updatedBy', 'createdDate', 'updatedDate','token'], 'safe'],
           /*   [['doctorId', 'nugrsingId', 'patientId', 'patientHistoryId', 'createdBy', 'updatedBy'], 'integer'],
             [['treatment', 'patientRequestStatus'], 'string'], */
-            [['doctor','phsId'], 'safe'],
+            [['doctor','phsId','name'], 'safe'],
         	
         		
-        		[['nursingHomeName','firstName','lastName','patientUniqueId'], 'safe'],
+        		[['nursingHomeName','firstName','lastName','patientUniqueId','startdate','enddate','allcount'], 'safe'],
         ];
     }
 

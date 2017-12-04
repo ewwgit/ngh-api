@@ -40,6 +40,9 @@ class Nursinghomes extends \yii\db\ActiveRecord
      public $countriesList;
      public $statesData;
      public $citiesData;
+     public $token;
+     public $startdate;
+     public $enddate;
      
    
 	
@@ -124,7 +127,8 @@ public function rules()
         		'pattern' => '/^[0-9\s]{4,8}$/',
         		'message' => 'PinCode Must be between 4 and 8 numeric only.'
         				],
-        		[['nuserId','nurshingUniqueId'],'required','on' => 'convertsneed']
+        		[['nuserId','nurshingUniqueId'],'required','on' => 'convertsneed'],
+        		[['token','startdate','enddate'],'safe'],
         		
         ];
     }

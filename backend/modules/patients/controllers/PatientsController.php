@@ -651,98 +651,98 @@ class PatientsController extends Controller
     	$result['errors'] = '';
     	$model = $this->findinfoModel($patientInfoId);
     	$patmodel = Patients::find()->where(['patientId' =>$model->patientId])->one();
-    	if($result['patentBasicInfo'][0]['firstName'] == null)
+    	if($patmodel->firstName == null)
     	{
     		$result['patentBasicInfo'][0]['firstName'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['firstName']=$patmodel->firstName;
     	}
-    	if($result['patentBasicInfo'][0]['lastName'] == null)
+    	if($patmodel->lastName == null)
     	{
     		$result['patentBasicInfo'][0]['lastName'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['lastName']=$patmodel->lastName;
     	}
-    	if($result['patentBasicInfo'][0]['gender'] == null)
+    	if($patmodel->gender == null)
     	{
     		$result['patentBasicInfo'][0]['gender'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['gender']=$patmodel->gender;
     	}
-    	if($result['patentBasicInfo'][0]['age'] == null)
+    	if($patmodel->age == null)
     	{
     		$result['patentBasicInfo'][0]['age'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['age']=$patmodel->age;
     	}
-    	if($result['patentBasicInfo'][0]['dateOfBirth'] == null)
+    	if($patmodel->dateOfBirth == null)
     	{
     		$result['patentBasicInfo'][0]['dateOfBirth'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['dateOfBirth']=$patmodel->dateOfBirth;
     	}
-    	if($result['patentBasicInfo'][0]['patientUniqueId'] == null)
+    	if($patmodel->patientUniqueId == null)
     	{
     		$result['patentBasicInfo'][0]['patientUniqueId'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['patientUniqueId']=$patmodel->patientUniqueId;
     	}
-    	if($result['patentBasicInfo'][0]['countryName'] == null)
+    	if($patmodel->countryName == null)
     	{
     		$result['patentBasicInfo'][0]['countryName'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['countryName']=$patmodel->countryName;
     	}
-    	if($result['patentBasicInfo'][0]['stateName'] == null)
+    	if($patmodel->stateName == null)
     	{
     		$result['patentBasicInfo'][0]['stateName'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['stateName']=$patmodel->stateName;
     	}
-    	if($result['patentBasicInfo'][0]['district'] == null)
+    	if($patmodel->district == null)
     	{
     		$result['patentBasicInfo'][0]['district'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['district']=$patmodel->district;
     	}
-    	if($result['patentBasicInfo'][0]['city'] == null)
+    	if($patmodel->city == null)
     	{
     		$result['patentBasicInfo'][0]['city'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['city']=$patmodel->city;
     	}
-    	if($result['patentBasicInfo'][0]['mandal'] == null)
+    	if($patmodel->mandal == null)
     	{
     		$result['patentBasicInfo'][0]['mandal'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['mandal']=$patmodel->mandal;
     	}
-    	if($result['patentBasicInfo'][0]['village'] == null)
+    	if($patmodel->village == null)
     	{
     		$result['patentBasicInfo'][0]['village'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['village']=$patmodel->village;
     	}
-    	if($result['patentBasicInfo'][0]['pinCode'] == null)
+    	if($patmodel->pinCode == null)
     	{
     		$result['patentBasicInfo'][0]['pinCode'] = '';
     	}
     	else {
     		$result['patentBasicInfo'][0]['pinCode']=$patmodel->pinCode;
     	}
-    	if($result['patentBasicInfo'][0]['mobile'] == null)
+    	if($patmodel->mobile == null)
     	{
     		$result['patentBasicInfo'][0]['mobile'] = '';
     	}
@@ -760,7 +760,7 @@ class PatientsController extends Controller
     		$result['patentBasicInfo'][0]['patientImage']='http://expertwebworx.in/nghospital/backend/web/'.$patmodel->patientImage;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['height'] == null)
+    	if($model->height == null)
     	{
     		$result['patentHistoryInfo'][0]['height'] = '';
     	}
@@ -768,7 +768,7 @@ class PatientsController extends Controller
     		$result['patentHistoryInfo'][0]['height'] = $model->height;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['weight'] == null)
+    	if($model->weight == null)
     	{
     		$result['patentHistoryInfo'][0]['weight'] = '';
     	}
@@ -776,7 +776,7 @@ class PatientsController extends Controller
     		$result['patentHistoryInfo'][0]['weight'] = $model->weight;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['respirationRate'] == null)
+    	if($model->respirationRate == null)
     	{
     		$result['patentHistoryInfo'][0]['respirationRate'] = '';
     	}
@@ -784,15 +784,15 @@ class PatientsController extends Controller
     		$result['patentHistoryInfo'][0]['respirationRate'] = $model->respirationRate;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['bp'] == null)
+    	if($model->BPLeftArm == null)
     	{
     		$result['patentHistoryInfo'][0]['bp'] = '';
     	}
     	else {
-    		$result['patentHistoryInfo'][0]['bp'] = $model->bp;
+    		$result['patentHistoryInfo'][0]['bp'] = $model->BPLeftArm;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['pulseRate'] == null)
+    	if($model->pulseRate == null)
     	{
     		$result['patentHistoryInfo'][0]['pulseRate'] = '';
     	}
@@ -800,15 +800,15 @@ class PatientsController extends Controller
     		$result['patentHistoryInfo'][0]['pulseRate'] = $model->pulseRate;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['temparature'] == null)
+    	if($model->temparatureType == null)
     	{
     		$result['patentHistoryInfo'][0]['temparature'] = '';
     	}
     	else {
-    		$result['patentHistoryInfo'][0]['temparature'] = $model->temparature;
+    		$result['patentHistoryInfo'][0]['temparature'] = $model->temparatureType;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['diseases'] == null)
+    	if($model->diseases == null)
     	{
     		$result['patentHistoryInfo'][0]['diseases'] = '';
     	}
@@ -816,7 +816,7 @@ class PatientsController extends Controller
     		$result['patentHistoryInfo'][0]['diseases'] = $model->diseases;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['allergicMedicine'] == null)
+    	if($model->allergicMedicine == null)
     	{
     		$result['patentHistoryInfo'][0]['allergicMedicine'] = '';
     	}
@@ -824,12 +824,20 @@ class PatientsController extends Controller
     		$result['patentHistoryInfo'][0]['allergicMedicine'] = $model->allergicMedicine;
     	}
     	
-    	if($result['patentHistoryInfo'][0]['patientCompliant'] == null)
+    	if($model->patientCompliant == null)
     	{
     		$result['patentHistoryInfo'][0]['patientCompliant'] = '';
     	}
     	else {
     		$result['patentHistoryInfo'][0]['patientCompliant'] = $model->patientCompliant;
+    	}
+    	
+    	if($model->spo2 == null)
+    	{
+    		$result['patentHistoryInfo'][0]['spo2'] = '';
+    	}
+    	else {
+    		$result['patentHistoryInfo'][0]['spo2'] = $model->spo2;
     	}
     	
     	

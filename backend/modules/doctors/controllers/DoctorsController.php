@@ -1079,4 +1079,44 @@ class DoctorsController extends Controller
     	}
     }
     
+    public function actionReports()
+    {
+    	$model = new DoctorNghPatient();
+    	 
+    	$result = array();
+    	 
+    	if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+    		 
+    		$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $model->doctorId,'status' =>'Active','token' => $model->token])->one();
+    		 
+    		if(empty($usertokenAccess))
+    		{
+    			$result['status'] = 'fail';
+    			$result['errors'] = "You don't have valid token";
+    			return $result;exit();
+    		}
+    		$requestInfo = DoctorNghPatient::find()->select('doctor_ngh_patient.nugrsingId,doctor_ngh_patient.docnghpatId,COUNT(doctor_ngh_patient.nugrsingId) as allcount,nursinghomes.nursingHomeName')->innerJoin('nursinghomes','nursinghomes.nursingId=doctor_ngh_patient.nugrsingId')->where('doctor_ngh_patient.doctorId = '.$model->doctorId.' AND doctor_ngh_patient.patientRequestStatus="COMPLETED" AND (DATE(doctor_ngh_patient.updatedDate) >= "'.$model->startdate.'" AND DATE(doctor_ngh_patient.updatedDate) <= "'.$model->enddate.'")')->groupBy('doctor_ngh_patient.nugrsingId')->all();
+    		//print_r($requestInfo);exit();
+    		if(empty($requestInfo))
+    		{
+    			$result['status'] = 'fail';
+    			$result['errors'] = "This Record not exist";
+    			return $result;exit();
+    		}
+    		else{
+    			
+    			$result['status'] = 'success';
+    			$i = 0;
+    			foreach ($requestInfo as $overallData)
+    			{
+    				$result['nursinghomesinfo'][$i]['nursingHomeName'] = $overallData->nursingHomeName;
+    				$result['nursinghomesinfo'][$i]['count'] = $overallData->allcount;
+    				$i++;
+    			}
+    		}
+    
+    		return $result;
+    	}
+    }
+    
 }

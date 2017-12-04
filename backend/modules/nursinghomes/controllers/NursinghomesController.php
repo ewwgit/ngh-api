@@ -17,6 +17,7 @@ use app\models\UserMain;
 use yii\web\UploadedFile;
 use backend\models\ChangePasswordForm;
 use app\models\UserSecurityTokens;
+use app\modules\patients\models\DoctorNghPatient;
 
 /**
  * NursinghomesController implements the CRUD actions for Nursinghomes model.
@@ -474,6 +475,46 @@ class NursinghomesController extends Controller
     			'model' => $model,
     	]);
     	
+    }
+    
+    public function actionReports()
+    {
+    	$model = new Nursinghomes();
+    
+    	$result = array();
+    
+    	if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+    		 
+    		$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $model->nuserId,'status' =>'Active','token' => $model->token])->one();
+    		 
+    		if(empty($usertokenAccess))
+    		{
+    			$result['status'] = 'fail';
+    			$result['errors'] = "You don't have valid token";
+    			return $result;exit();
+    		}
+    		$requestInfo = DoctorNghPatient::find()->select('doctor_ngh_patient.doctorId,doctor_ngh_patient.docnghpatId,COUNT(doctor_ngh_patient.nugrsingId) as allcount,doctors.name')->innerJoin('doctors','doctors.userId=doctor_ngh_patient.doctorId')->where('doctor_ngh_patient.nugrsingId = '.$model->nuserId.' AND doctor_ngh_patient.patientRequestStatus="COMPLETED" AND (DATE(doctor_ngh_patient.updatedDate) >= "'.$model->startdate.'" AND DATE(doctor_ngh_patient.updatedDate) <= "'.$model->enddate.'")')->groupBy('doctor_ngh_patient.doctorId')->all();
+    		//print_r($requestInfo);exit();
+    		if(empty($requestInfo))
+    		{
+    			$result['status'] = 'fail';
+    			$result['errors'] = "This Record not exist";
+    			return $result;exit();
+    		}
+    		else{
+    			 
+    			$result['status'] = 'success';
+    			$i = 0;
+    			foreach ($requestInfo as $overallData)
+    			{
+    				$result['nursinghomesinfo'][$i]['doctorName'] = $overallData->name;
+    				$result['nursinghomesinfo'][$i]['count'] = $overallData->allcount;
+    				$i++;
+    			}
+    		}
+    
+    		return $result;
+    	}
     }
     
     
