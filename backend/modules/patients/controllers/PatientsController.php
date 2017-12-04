@@ -247,6 +247,8 @@ class PatientsController extends Controller
         	$patmodel->temparatureType = $model->temparatureType;
         	$patmodel->createdDate = date('Y-m-d H:i:s');
         	$patmodel->patientId = $model->patientId;
+        	$patmodel->respirationRate = $model->respirationRate;
+        	$patmodel->spo2 = $model->spo2;
         	$patmodelSuccess = $patmodel->save();
         	$patienthstId = $patmodel->patientInfoId;
         	
@@ -922,6 +924,7 @@ class PatientsController extends Controller
     	$result['patentHistoryInfo'][0]['temparature']=$model->temparatureType;
     	$result['patentHistoryInfo'][0]['diseases']=$model->diseases;
     	$result['patentHistoryInfo'][0]['allergicMedicine']=$model->allergicMedicine;
+    	$result['patentHistoryInfo'][0]['spo2']=$model->spo2;
     	$result['patentHistoryInfo'][0]['patientCompliant']=$model->patientCompliant;
     	
     	$prescriptionInfo = DoctorNghPatient::find()->where(['patientHistoryId' => $patientInfoId , 'patientRequestStatus' => 'COMPLETED'])->one();
@@ -1330,6 +1333,8 @@ class PatientsController extends Controller
     			$patmodel->patientCompliant = $model->patientCompliant;
     			$patmodel->temparatureType = $model->temparatureType;
     			$patmodel->createdDate = date('Y-m-d H:i:s');
+    			$patmodel->respirationRate = $model->respirationRate;
+    			$patmodel->spo2 = $model->spo2;
     			$patmodel->patientId = $patientIdnew;
     			$patmodelSuccess = $patmodel->save();    			
     			$patienthstId = $patmodel->patientInfoId;
