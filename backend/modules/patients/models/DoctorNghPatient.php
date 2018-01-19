@@ -52,7 +52,7 @@ class DoctorNghPatient extends \yii\db\ActiveRecord
             [['doctor','phsId','name'], 'safe'],
         	
         		
-        		[['nursingHomeName','firstName','lastName','patientUniqueId','startdate','enddate','allcount'], 'safe'],
+        		[['nursingHomeName','firstName','lastName','patientUniqueId','startdate','enddate','allcount','RequestType'], 'safe'],
         ];
     }
 

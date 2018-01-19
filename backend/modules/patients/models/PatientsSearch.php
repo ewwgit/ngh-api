@@ -20,7 +20,7 @@ class PatientsSearch extends Patients
     {
         return [
             [['patientId', 'country', 'state'], 'integer'],
-            [['firstName', 'lastName', 'gender', 'age', 'dateOfBirth', 'patientUniqueId', 'countryName', 'stateName', 'district', 'city', 'mandal', 'village', 'pinCode', 'mobile', 'createdDate', 'updatedDate'], 'safe'],
+            [['firstName', 'lastName', 'gender', 'age', 'dateOfBirth', 'patientUniqueId', 'countryName', 'stateName', 'district', 'city', 'mandal', 'village', 'pinCode', 'mobile', 'createdDate', 'updatedDate','aadhar_number'], 'safe'],
         ];
     }
 

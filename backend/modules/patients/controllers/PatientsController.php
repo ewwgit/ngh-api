@@ -164,6 +164,17 @@ class PatientsController extends Controller
         		$result['patientsInformation'][$i]['patientUniqueId'] = $models[$i]['patientUniqueId'];
         	}
         	
+        	if($models[$i]['aadhar_number'] == null)
+        	{
+        		$result['patientsInformation'][$i]['aadhar_number'] = '';
+        	}
+        	else {
+        		$result['patientsInformation'][$i]['aadhar_number'] = $models[$i]['aadhar_number'];
+        	}
+        	
+        	
+        	
+        	
         	
         	
         	

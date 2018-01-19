@@ -978,7 +978,7 @@ class DoctorsController extends Controller
     		return $result;exit();
     	}
     	$result['status'] = 'success';
-    	$query = DoctorNghPatient::find()->select('doctor_ngh_patient.patientRequestStatus,doctor_ngh_patient.patientHistoryId,nursinghomes.nursingHomeName,patients.firstName,patients.lastName,patients.patientId,patients.patientUniqueId')->innerJoin('nursinghomes','doctor_ngh_patient.nugrsingId=nursinghomes.nuserId')->innerJoin('patient_information','doctor_ngh_patient.patientHistoryId=patient_information.patientInfoId')->innerJoin('patients','patient_information.patientId=patients.patientId')->where("doctor_ngh_patient.doctorId =".$docId." AND doctor_ngh_patient.patientRequestStatus='$requestStatus'")->all();
+    	$query = DoctorNghPatient::find()->select('doctor_ngh_patient.RequestType,doctor_ngh_patient.patientRequestStatus,doctor_ngh_patient.patientHistoryId,nursinghomes.nursingHomeName,patients.firstName,patients.lastName,patients.patientId,patients.patientUniqueId')->innerJoin('nursinghomes','doctor_ngh_patient.nugrsingId=nursinghomes.nuserId')->innerJoin('patient_information','doctor_ngh_patient.patientHistoryId=patient_information.patientInfoId')->innerJoin('patients','patient_information.patientId=patients.patientId')->where("doctor_ngh_patient.doctorId =".$docId." AND doctor_ngh_patient.patientRequestStatus='$requestStatus'")->all();
     	$i= 0;
     	
     	foreach ($query as $patient)
@@ -990,6 +990,7 @@ class DoctorsController extends Controller
     		$result['DocPatientRequests'][$i]['patientHistoryId']= $patient->patientHistoryId;
     		$result['DocPatientRequests'][$i]['patientRequestStatus']= $patient->patientRequestStatus;
     		$result['DocPatientRequests'][$i]['patientUniqueId']= $patient->patientUniqueId;
+    		$result['DocPatientRequests'][$i]['RequestType']= $patient->RequestType;
     		$i++;
     	}
     	return $result;
