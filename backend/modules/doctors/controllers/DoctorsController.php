@@ -29,6 +29,7 @@ use app\modules\patients\models\Patients;
 use app\modules\patients\models\PatientInformation;
 use app\modules\patients\models\DoctorNghPatientSearch;
 use app\models\UserSecurityTokens;
+use app\modules\nursinghomes\models\Nursinghomes;
 
 /**
  * DoctorsController implements the CRUD actions for Doctors model.
@@ -1052,6 +1053,9 @@ class DoctorsController extends Controller
     	$result = array();
     	
     	if ($model->load(\Yii::$app->getRequest()->getBodyParams(), '')){
+    		
+    		$nurseInfo = Nursinghomes::find()->where(['nuserId' => $model->nugrsingId])->one();
+    		$mpatientModel = Patients::find()->where(['patientId' => $model->patientId])->one();
     	
     		$usertokenAccess = UserSecurityTokens::find()->where(['userId' => $model->doctorId,'status' =>'Active','token' => $model->token])->one();
     		 
@@ -1074,6 +1078,20 @@ class DoctorsController extends Controller
     			$requestInfo->updatedBy = $model->doctorId;
     			$requestInfo->updatedDate = date('Y-m-d H:i:s');
     			$requestInfo->update();
+    			$ch = curl_init();
+    			$message = 'Hello '.$nurseInfo->nursingHomeName.', '.$mpatientModel->firstName.' '.$mpatientModel->lastName.' Advice form is ready to download.';
+    			//$message = "Your OTP is";
+    			$URL =  "http://sms.expertbulksms.com/WebServiceSMS.aspx?User=mulugu&passwd=Mulugu@123$&mobilenumber=".$nurseInfo->mobile."&message=".urlencode($message)."&sid=mulugu&mtype=N";
+    			/* echo $URL;
+    			 exit(); */
+    			curl_setopt($ch, CURLOPT_URL,$URL);
+    			 
+    			
+    			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    			$server_output = curl_exec ($ch);
+    			//print_r(var_dump($server_output));exit();
+    			curl_close ($ch);
+    			$sendOtpresp = json_decode($server_output, true);
     			$result['status'] = 'success';
     		}
     		

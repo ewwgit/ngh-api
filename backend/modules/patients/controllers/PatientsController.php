@@ -21,7 +21,7 @@ use app\modules\qualifications\models\Qualifications;
 use app\modules\doctors\models\DoctorsSpecialities;
 use app\modules\specialities\models\Specialities;
 use app\models\UserSecurityTokens;
-use yii\helpers\Url;
+use yii\helpers\Url;use app\modules\nursinghomes\models\Nursinghomes;
 /**
  * PatientsController implements the CRUD actions for Patients model.
  */
@@ -1126,7 +1126,7 @@ class PatientsController extends Controller
     }
     
     public function actionAssignDoctor()
-    {
+    {    	date_default_timezone_set("Asia/Calcutta");
     	$model = new DoctorNghPatient;
     	$result = array();
     	 
@@ -1152,7 +1152,7 @@ class PatientsController extends Controller
     				$model->updatedDate = date('Y-m-d H:i:s');
     				$model->createdBy = $model->nugrsingId;
     				$model->updatedBy = $model->nugrsingId;
-    				$model->save();
+    				$model->save();    				    				$docnewInfo = Doctors::find()->where(['userId' => $model->doctorId])->one();    				$nurseInfo = Nursinghomes::find()->where(['nuserId' => $model->nugrsingId])->one();    				$currentdatenew = date('d-M-Y h:i');    				    				$ch = curl_init();    				$message = 'Hello '.$docnewInfo->name.' you have a Tele consultation Appointment with  '.$nurseInfo->nursingHomeName.' on '.$currentdatenew.'. ';    				//$message = "Your OTP is";    				$URL =  "http://sms.expertbulksms.com/WebServiceSMS.aspx?User=mulugu&passwd=Mulugu@123$&mobilenumber=".$docnewInfo->doctorMobile."&message=".urlencode($message)."&sid=mulugu&mtype=N";    				/* echo $URL;    				 exit(); */    				curl_setopt($ch, CURLOPT_URL,$URL);    				     				    				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);    				$server_output = curl_exec ($ch);    				//print_r(var_dump($server_output));exit();    				curl_close ($ch);
     				if($model->save())
     				{
     					$result['status'] = 'success';
