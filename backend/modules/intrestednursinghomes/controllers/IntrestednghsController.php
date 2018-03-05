@@ -134,6 +134,20 @@ class IntrestednghsController extends Controller
 			
         	if($model->validate())
         	{
+        		$ch = curl_init();
+        		$message = 'Thank you '.$model->name.' for Registering with CONSULT.XP, we will send your user id, password soon.';
+        		//$mb = '9951904473';
+        		//$message = "Your OTP is";
+        		$URL =  "http://sms.expertbulksms.com/WebServiceSMS.aspx?User=mulugu&passwd=Mulugu@123$&mobilenumber=".$model->mobile."&message=".urlencode($message)."&sid=mulugu&mtype=N";
+        		/* echo $URL;
+        		 exit(); */
+        		curl_setopt($ch, CURLOPT_URL,$URL);
+        			
+        		
+        		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        		$server_output = curl_exec ($ch);
+        		//print_r(var_dump($server_output));exit();
+        		curl_close ($ch);
         	  if($model->save())
         	  {
         	  	$result['status'] = 'success';
@@ -163,8 +177,24 @@ class IntrestednghsController extends Controller
 				$docModel->mobile = $model->mobile;
 				$docModel->createdDate = $model->createdDate;
 				$docModel->createdDate = $model->status;
+				
+				
 				if($docModel->validate())
 				{
+					$ch = curl_init();
+					$message = 'Thank you DR '.$docModel->name.' for Registering with CONSULT.XP, we will send your user id, password soon.';
+					//$mb = '9951904473';
+					//$message = "Your OTP is";
+					$URL =  "http://sms.expertbulksms.com/WebServiceSMS.aspx?User=mulugu&passwd=Mulugu@123$&mobilenumber=".$docModel->mobile."&message=".urlencode($message)."&sid=mulugu&mtype=N";
+					/* echo $URL;
+					 exit(); */
+					curl_setopt($ch, CURLOPT_URL,$URL);
+						
+					
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					$server_output = curl_exec ($ch);
+					//print_r(var_dump($server_output));exit();
+					curl_close ($ch);
 					if($docModel->save())
 					{
 						$result['status'] = 'success';
