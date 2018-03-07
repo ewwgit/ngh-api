@@ -191,7 +191,7 @@ class Doctors extends \yii\db\ActiveRecord
     
     public static function getDoctorsBySpeciality($specId)
     {
-    	 
+    	date_default_timezone_set("Asia/Calcutta");
     	$pDate = date("Y-M-d H:i:s");
     	$presentDay = date("D", strtotime($pDate));
     	$presentTime =  date("H:i", strtotime($pDate));
